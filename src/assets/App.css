@@ -147,3 +147,11 @@ button {
   color: red;
   margin-bottom: 10px;
 }
+
+.btn-info {
+  background-color: #17a2b8;
+  color: white;
+}
+.btn-info:hover {
+  background-color: #117a8b;
+}

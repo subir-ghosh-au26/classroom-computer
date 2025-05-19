@@ -1,7 +1,7 @@
 import React from 'react';
 import '../../assets/CardGrid.css';
 
-const ComputerList = ({ computers, onEdit, onDelete }) => {
+const ComputerList = ({ computers, onEdit, onDelete, onShowQrModal }) => {
     if (!computers || computers.length === 0) {
         return <p className="empty-grid-message">No computers found. Try adjusting filters or adding new computers.</p>;
     }
@@ -71,6 +71,10 @@ const ComputerList = ({ computers, onEdit, onDelete }) => {
                         </p> */}
                     </div>
                     <div className="card-actions">
+                        <button onClick={() => onShowQrModal(computer)} className="btn btn-info" style={{ marginRight: 'auto' }}> {/* ADDED BUTTON, aligned left */}
+                            View QR
+                        </button>
+
                         <button onClick={() => onEdit(computer)} className="btn btn-secondary">
                             Edit
                         </button>

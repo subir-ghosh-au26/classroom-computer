@@ -4,13 +4,16 @@ import { getComputers, createComputer, updateComputer, deleteComputer, getClassr
 import ComputerList from '../components/Computers/ComputerList'; // Create this
 import ComputerForm from '../components/Computers/ComputerForm'; // Create this
 import Modal from '../components/UI/Modal';
+import { QRCodeSVG } from 'qrcode.react';
 
 const ComputersPage = () => {
     const [computers, setComputers] = useState([]);
     const [classrooms, setClassrooms] = useState([]); // For dropdown in form
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [showQrModal, setShowQrModal] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [qrComputer, setQrComputer] = useState(null);
     const [editingComputer, setEditingComputer] = useState(null);
     const [filterClassroomId, setFilterClassroomId] = useState('');
 
@@ -93,6 +96,16 @@ const ComputersPage = () => {
         setShowModal(true);
     };
 
+    const handleShowQrModal = (computer) => {
+        setQrComputer(computer);
+        setShowQrModal(true);
+    };
+
+    const handleCloseQrModal = () => {
+        setShowQrModal(false);
+        setQrComputer(null);
+    };
+
     if (loading && computers.length === 0 && classrooms.length === 0) return <p>Loading computers and classroom data...</p>;
 
     return (
@@ -118,7 +131,7 @@ const ComputersPage = () => {
             {error && <p className="error-message" style={{ border: '1px solid red', padding: '10px', backgroundColor: '#ffe0e0' }}>{error}</p>}
             {loading && <p>Refreshing data...</p>}
 
-            <ComputerList computers={computers} onEdit={handleEdit} onDelete={handleDelete} /> {/* Create this component */}
+            <ComputerList computers={computers} onEdit={handleEdit} onDelete={handleDelete} onShowQrModal={handleShowQrModal} /> {/* Create this component */}
 
             <Modal title={editingComputer ? "Edit Computer" : "Add New Computer"} show={showModal} onClose={() => { setShowModal(false); setEditingComputer(null); setError(null) }}>
                 <ComputerForm
@@ -129,6 +142,44 @@ const ComputersPage = () => {
                 />
                 {error && showModal && <p className="error-message" style={{ marginTop: '10px' }}>{error}</p>}
             </Modal>
+
+            {qrComputer && (
+                <Modal
+                    title={`QR Code for ${qrComputer.assetTag}`}
+                    show={showQrModal}
+                    onClose={handleCloseQrModal}
+                    footer={
+                        <button className="btn btn-secondary" onClick={handleCloseQrModal}>
+                            Close
+                        </button>
+                    }
+                >
+                    <div style={{ textAlign: 'center', padding: '20px' }}>
+                        <QRCodeSVG
+                            value={qrComputer.assetTag} // The data to encode
+                            size={256}                  // Size of the QR code
+                            level={"H"}                 // Error correction level
+                            bgColor={"#ffffff"}
+                            fgColor={"#000000"}
+                            renderAs={"svg"}            // Render as SVG for better quality
+                        // You can add a logo too if desired, see qrcode.react docs
+                        // imageSettings={{
+                        //   src: "path/to/your/logo.png",
+                        //   x: undefined,
+                        //   y: undefined,
+                        //   height: 48,
+                        //   width: 48,
+                        //   excavate: true,
+                        // }}
+                        />
+                        <p style={{ marginTop: '15px', fontSize: '1.2em', fontWeight: 'bold' }}>
+                            Asset Tag: {qrComputer.assetTag}
+                        </p>
+                        <p>Print this QR code and attach it to the computer.</p>
+                    </div>
+                </Modal>
+            )}
+
         </div>
     );
 };
